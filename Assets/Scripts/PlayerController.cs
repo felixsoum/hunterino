@@ -18,8 +18,8 @@ public class PlayerController : MonoBehaviour
 	float rotationY = 180f;
 	float width;
 	float velocityY;
-	int jumpDelayCount;
-	const int JUMP_DELAY_MAX = 2;
+	bool canJump = true;
+	const float JUMP_DELAY = 0.5f;
 	float shotCooldown;
 	Vector3 initialPos;
 	Quaternion initialRot;
@@ -90,15 +90,15 @@ public class PlayerController : MonoBehaviour
 
 	void CheckJump()
 	{
-		if (jumpDelayCount > 0)
+		if (!canJump)
 		{
-			jumpDelayCount--;
 			return;
 		}
 		if (Input.GetButton("Jump") && IsGrounded())
 		{
+			canJump = false;
+			Invoke("ResetJump", JUMP_DELAY);
 			rigidbody.AddForce(new Vector3(0, jumpForce, 0));
-			jumpDelayCount = JUMP_DELAY_MAX;
 		}
 	}
 
@@ -150,5 +150,10 @@ public class PlayerController : MonoBehaviour
 		var direction = transform.position - pusherPos;
 		var force = direction.normalized * pushForce * (1f + damage/100f);
 		rigidbody.AddForce(force, ForceMode.Impulse);
+	}
+
+	void ResetJump()
+	{
+		canJump = true;
 	}
 }
