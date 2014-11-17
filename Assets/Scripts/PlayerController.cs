@@ -36,7 +36,6 @@ public class PlayerController : MonoBehaviour
 		}
 	}
 	int damage;
-	Enemies enemies;
 
 	void Awake()
 	{
@@ -44,9 +43,8 @@ public class PlayerController : MonoBehaviour
 		initialRot = transform.rotation;
 		head = transform.Find("Head").transform;
 		feet = transform.Find("Feet").transform;
-		BoxCollider box = GetComponent<BoxCollider>();
-		width = box.size.x;
-		enemies = GameObject.FindGameObjectWithTag("Enemies").GetComponent<Enemies>();
+		CapsuleCollider collider = GetComponent<CapsuleCollider>();
+		width = collider.radius;
 	}
 
 	void Start()
@@ -137,7 +135,6 @@ public class PlayerController : MonoBehaviour
 		rotationX = 0;
 		rotationY = 180;
 		Damage = 0;
-		enemies.Clear();
 	}
 
 	void OnHit(int d)
