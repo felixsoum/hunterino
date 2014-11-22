@@ -12,6 +12,7 @@ public class PlayerController : MonoBehaviour
 	public Transform gunTip;
 	public TextMesh damageText;
 	public float pushForce = 100f;
+	public bool isGrounded;
 	Transform head;
 	Transform feet;
 	float rotationX = 0;
@@ -54,6 +55,7 @@ public class PlayerController : MonoBehaviour
 
 	void Update()
 	{
+		isGrounded = IsGrounded();
 		UpdateRotation();
 		UpdateMovement();
 		CheckJump();
@@ -63,6 +65,11 @@ public class PlayerController : MonoBehaviour
 		{
 			Reset();
 		}
+	}
+
+	void FixedUpdate()
+	{
+		UpdateGravity();
 	}
 
 	void UpdateRotation()
@@ -86,13 +93,23 @@ public class PlayerController : MonoBehaviour
 		rigidbody.AddForce(speed);
 	}
 
+	void UpdateGravity()
+	{
+		Vector3 gravity = Physics.gravity * rigidbody.mass;
+		if (isGrounded)
+		{
+			gravity /= 4f;
+		}
+		rigidbody.AddForce(gravity);
+	}
+
 	void CheckJump()
 	{
 		if (!canJump)
 		{
 			return;
 		}
-		if (Input.GetButton("Jump") && IsGrounded())
+		if (Input.GetButton("Jump") && isGrounded)
 		{
 			canJump = false;
 			Invoke("ResetJump", JUMP_DELAY);
@@ -115,7 +132,7 @@ public class PlayerController : MonoBehaviour
 		foreach (Collider c in Physics.OverlapSphere(feet.transform.position, width))
 		{
 			float distance = feet.transform.position.y - c.ClosestPointOnBounds(feet.transform.position).y;
-			if (distance > 0.01f || c.gameObject == this.gameObject)
+			if (c.isTrigger || distance > 0.01f || c.gameObject == this.gameObject)
 			{
 				continue;
 			}
