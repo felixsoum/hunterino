@@ -10,7 +10,6 @@ public class PlayerController : MonoBehaviour
 	public float timeBetweenShots = 0.1f;
 	public GameObject playerBullet;
 	public Transform gunTip;
-	public TextMesh damageText;
 	public float pushForce = 100f;
 	public bool isGrounded;
 	Transform head;
@@ -33,7 +32,6 @@ public class PlayerController : MonoBehaviour
 		set
 		{
 			damage = value;
-			damageText.text = damage.ToString() + "%";
 		}
 	}
 	int damage;
