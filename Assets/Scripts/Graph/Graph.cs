@@ -4,6 +4,13 @@ using System.Collections.Generic;
 
 public class Graph
 {
+	public List<GraphNode> Nodes
+	{
+		get
+		{
+			return nodes;
+		}
+	}
 	public int Count
 	{
 		get
@@ -24,5 +31,3 @@ public class Graph
 		nodes.Add(new GraphNode(nodes[nodes.Count - 1]));
 	}
 }
-
-
