@@ -6,8 +6,18 @@ public class Rooms : MonoBehaviour
 {
 	public List<Room> rooms;
 
-	void Start()
+	public List<RoomTemplate> GetTemplates()
 	{
-		rooms[0].Bang();
+		var templates = new List<RoomTemplate>();
+		for (int i = 0; i < rooms.Count; i++)
+		{
+			templates.Add(new RoomTemplate(rooms[i], i));
+		}
+		return templates;
+	}
+
+	public void Fill(Graph graph)
+	{
+
 	}
 }

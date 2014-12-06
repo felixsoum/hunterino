@@ -5,4 +5,7 @@ public class Door : MonoBehaviour
 {
 	public enum Orientation { North, East, South, West }
 	public Orientation orientation;
+	public int cellX;
+	public int cellY;
+	public int cellZ;
 }
