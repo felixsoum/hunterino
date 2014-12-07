@@ -5,9 +5,7 @@ using System.Collections.Generic;
 public class Room : MonoBehaviour
 {
 	public List<Door> doors;
-	public int lengthX = 1;
-	public int lengthY = 1;
-	public int lengthZ = 1;
+	public Triple length = new Triple(1);
 	const float ROOM_SIZE = 25f;
 	const float ROOM_HEIGHT = 12f;
 
@@ -20,22 +18,17 @@ public class Room : MonoBehaviour
 
 		foreach (Door door in doors)
 		{
-			lengthX = Mathf.Max(lengthX, door.cellX + 1);
-			lengthY = Mathf.Max(lengthY, door.cellY + 1);
-			lengthZ = Mathf.Max(lengthZ, door.cellZ + 1);
+			length.X = Mathf.Max(length.X, door.cell.X + 1);
+			length.Y = Mathf.Max(length.Y, door.cell.Y + 1);
+			length.Z = Mathf.Max(length.Z, door.cell.Z + 1);
 		}
-	}
-
-	public void Bang()
-	{
-		Debug.Log("Bang");
 	}
 
 	public void SetCellPosition(Door door)
 	{
 		Vector3 pos = door.transform.position - transform.position;
-	    door.cellX = (int) ((pos.x + ROOM_SIZE/2)/ROOM_SIZE);
-		door.cellY = (int) (pos.y/ROOM_HEIGHT);
-		door.cellZ = (int) ((pos.z + ROOM_SIZE/2)/ROOM_SIZE);
+	    door.cell.X = (int) ((pos.x + ROOM_SIZE/2)/ROOM_SIZE);
+		door.cell.Y = (int) (pos.y/ROOM_HEIGHT);
+		door.cell.Z = (int) ((pos.z + ROOM_SIZE/2)/ROOM_SIZE);
 	}
 }

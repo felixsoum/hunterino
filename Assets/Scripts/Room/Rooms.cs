@@ -15,9 +15,4 @@ public class Rooms : MonoBehaviour
 		}
 		return templates;
 	}
-
-	public void Fill(Graph graph)
-	{
-
-	}
 }
