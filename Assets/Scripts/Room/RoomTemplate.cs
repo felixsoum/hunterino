@@ -19,6 +19,8 @@ public class RoomTemplate
 	{
 		Origin = room;
 		Index = index;
+		length = room.length;
+		Debug.Log("T=" + room.length);
 		Doors = new List<DoorTemplate>();
 		NorthDoors = new List<DoorTemplate>();
 		EastDoors = new List<DoorTemplate>();

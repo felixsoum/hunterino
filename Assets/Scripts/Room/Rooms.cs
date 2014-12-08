@@ -6,6 +6,14 @@ public class Rooms : MonoBehaviour
 {
 	public List<Room> rooms;
 
+	void Awake()
+	{
+		foreach (Room room in rooms)
+		{
+			room.Init();
+		}
+	}
+
 	public List<RoomTemplate> GetTemplates()
 	{
 		var templates = new List<RoomTemplate>();

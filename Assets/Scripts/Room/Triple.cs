@@ -22,4 +22,9 @@ public struct Triple
 	{
 		return new Triple(t1.X - t2.X, t1.Y - t2.Y, t1.Z - t2.Z);
 	}
+
+	public override string ToString ()
+	{
+		return "X: " + X.ToString() + ", Y: " + Y.ToString() + ", Z: " + Z.ToString();
+	}
 }

@@ -6,10 +6,13 @@ public class Room : MonoBehaviour
 {
 	public List<Door> doors;
 	public Triple length = new Triple(1);
-	const float ROOM_SIZE = 25f;
-	const float ROOM_HEIGHT = 12f;
+	public const float ROOM_SIZE = 25f;
+	public const float ROOM_HEIGHT = 12f;
+	public int lengthX;
+	public int lengthY;
+	public int lengthZ;
 
-	public void Start()
+	public void Init()
 	{
 		foreach (Door door in doors)
 		{
@@ -22,6 +25,11 @@ public class Room : MonoBehaviour
 			length.Y = Mathf.Max(length.Y, door.cell.Y + 1);
 			length.Z = Mathf.Max(length.Z, door.cell.Z + 1);
 		}
+		Debug.Log("Length for " + gameObject.name + " " + length);
+		// For inspector
+		lengthX = length.X;
+		lengthY = length.Y;
+		lengthZ = length.Z;
 	}
 
 	public void SetCellPosition(Door door)

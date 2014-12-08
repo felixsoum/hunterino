@@ -26,6 +26,9 @@ public class GraphNode
 
 	public void SetCell(Triple cell)
 	{
+		Debug.Log("Trying to set cell for " + CurrentRoom.Origin.name);
+		Debug.Log("Cell=" + cell);
+		Debug.Log("Length=" + CurrentRoom.Origin.length);
 		CurrentRoom.cell = cell;
 		SetSpace(true);
 	}
@@ -38,10 +41,29 @@ public class GraphNode
 			{
 				for (int z = 0; z < CurrentRoom.length.Z; z++)
 				{
-					space[x, y, z] = value;
+					space[CurrentRoom.cell.X + x, CurrentRoom.cell.Y + y, CurrentRoom.cell.Z + z] = value;
 				}
 			}
 		}
+	}
+
+	private int CountSpace()
+	{
+		int count = 0;
+		for (int x = 0; x < space.GetLength(0); x++)
+		{
+			for (int y = 0; y < space.GetLength(1); y++)
+			{
+				for (int z = 0; z < space.GetLength(2); z++)
+				{
+					if (space[x, y, z])
+					{
+						count++;
+					}
+				}
+			}
+		}
+		return count;
 	}
 
 	public void SetRoom(int index)
@@ -55,7 +77,7 @@ public class GraphNode
 		var parentDoor = Parent.CurrentRoom.PopDoor();
 		if (parentDoor == null)
 		{
-			Debug.LogError("Parent door is null");
+			Debug.Log("Parent door is null");
 			return false;
 		}
 		var roomIndices = GetIndices(Rooms.Count);
@@ -75,10 +97,14 @@ public class GraphNode
 				doorIndices.RemoveAt(randomDoor);
 				Triple parentDoorCell = parentDoor.Cell + Parent.CurrentRoom.cell;
 				Triple currentRoomCell = FindDoorCell(parentDoorCell, currentDoor) - currentDoor.Cell;
-				if (IsPlaceable(currentRoomCell, currentRoom.length))
+				bool isPlaceable = IsPlaceable(currentRoomCell, currentRoom.length);
+				Debug.Log("isPlaceable=" + isPlaceable);
+				if (isPlaceable)
 				{
+					Debug.Log("s1=" + CountSpace());
 					CurrentRoom = currentRoom;
 					SetCell(currentRoomCell);
+					Debug.Log("s2=" + CountSpace());
 					var isChildrenPossible = true;
 					for (int i = 0; i < Children.Count; i++)
 					{
@@ -88,10 +114,21 @@ public class GraphNode
 							break;
 						}
 					}
-					return isChildrenPossible ? true : TryRoom();
+					if (!isChildrenPossible)
+					{
+						SetSpace(false);
+						TryRoom();
+					}
+					else
+					{
+						Debug.Log("All children possible");
+						return true;
+					}
 				}
 			}
+			Debug.Log("No more doorIndices");
 		}
+		Debug.Log("No more roomIndices");
 		return false;
 	}
 
