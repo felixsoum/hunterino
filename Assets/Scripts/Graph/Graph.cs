@@ -23,11 +23,18 @@ public class Graph
 	public Graph()
 	{
 		nodes = new List<GraphNode>();
-		nodes.Add(new GraphNode());
 	}
 
 	public void AddNode()
 	{
-		nodes.Add(new GraphNode(nodes[nodes.Count - 1]));
+		var count = nodes.Count;
+		if (count == 0)
+		{
+			nodes.Add(new GraphNode());
+		}
+		else
+		{
+			nodes.Add(new GraphNode(nodes[nodes.Count - 1], count));
+		}
 	}
 }

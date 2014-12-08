@@ -15,7 +15,7 @@ public class PlayerController : MonoBehaviour
 	Transform head;
 	Transform feet;
 	float rotationX = 0;
-	float rotationY = 180f;
+	float rotationY = 0;
 	float width;
 	float velocityY;
 	bool canJump = true;
@@ -59,7 +59,7 @@ public class PlayerController : MonoBehaviour
 		CheckJump();
 		CheckShoot();
 
-		if (transform.position.y < -20f)
+		if (transform.position.y < -100f)
 		{
 			Reset();
 		}
@@ -148,7 +148,7 @@ public class PlayerController : MonoBehaviour
 		transform.rotation = initialRot;
 		rigidbody.velocity = Vector3.zero;
 		rotationX = 0;
-		rotationY = 180;
+		rotationY = 0;
 		Damage = 0;
 	}
 

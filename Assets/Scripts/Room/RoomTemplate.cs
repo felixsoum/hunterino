@@ -20,7 +20,6 @@ public class RoomTemplate
 		Origin = room;
 		Index = index;
 		length = room.length;
-		Debug.Log("T=" + room.length);
 		Doors = new List<DoorTemplate>();
 		NorthDoors = new List<DoorTemplate>();
 		EastDoors = new List<DoorTemplate>();
@@ -59,7 +58,7 @@ public class RoomTemplate
 	public DoorTemplate PopDoor()
 	{
 		int count = Doors.Count;
-		Debug.Log(count);
+		Debug.Log("Popping one door out of: " + count);
 		if (count == 0)
 		{
 			return null;

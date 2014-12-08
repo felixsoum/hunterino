@@ -10,12 +10,14 @@ public class GraphNode
 	public RoomTemplate CurrentRoom { get; set; }
 	public bool[,,] space;
 	public DoorTemplate ParentDoor { get; set; }
+	public int nodeIndex = 0;
         
-    public GraphNode() : this(null) {}
+    public GraphNode() : this(null, 0) {}
 
-	public GraphNode(GraphNode parent)
+	public GraphNode(GraphNode parent, int i)
 	{
 		Parent = parent;
+		nodeIndex = i;
 		if (parent != null)
 		{
 			parent.Children.Add(this);
@@ -26,9 +28,6 @@ public class GraphNode
 
 	public void SetCell(Triple cell)
 	{
-		Debug.Log("Trying to set cell for " + CurrentRoom.Origin.name);
-		Debug.Log("Cell=" + cell);
-		Debug.Log("Length=" + CurrentRoom.Origin.length);
 		CurrentRoom.cell = cell;
 		SetSpace(true);
 	}
@@ -74,26 +73,32 @@ public class GraphNode
 
 	public bool TryRoom()
 	{
+		Debug.Log("TryRoom node #" + nodeIndex + ", parent:" + Parent.CurrentRoom.Origin.name + Parent.nodeIndex);
 		var parentDoor = Parent.CurrentRoom.PopDoor();
 		if (parentDoor == null)
 		{
 			Debug.Log("Parent door is null");
 			return false;
 		}
+		Debug.Log("Parent door:" + parentDoor.Origin.orientation);
 		var roomIndices = GetIndices(Rooms.Count);
+		Debug.Log("roomIndices1:" + roomIndices.Count);
 		while (roomIndices.Count > 0)
 		{
+			Debug.Log("roomIndices2:" + roomIndices.Count);
 			int randomRoom = Random.Range(0, roomIndices.Count - 1);
 			var currentRoom = Rooms[roomIndices[randomRoom]];
-			Debug.Log("Trying room: " + currentRoom.Origin.gameObject.name);
+			Debug.Log("Trying current room: " + currentRoom.Origin.gameObject.name);
 			roomIndices.RemoveAt(randomRoom);
 			var matchingDoors = GetMatchingDoors(currentRoom, parentDoor.Origin.orientation);
 			var doorIndices = GetIndices(matchingDoors.Count);
+			Debug.Log("doorIndices1:" + doorIndices.Count);
 			while (doorIndices.Count > 0)
 			{
+				Debug.Log("doorIndices2:" + doorIndices.Count);
 				int randomDoor = Random.Range(0, doorIndices.Count - 1);
 				var currentDoor = matchingDoors[doorIndices[randomDoor]];
-				Debug.Log("Trying door: " + currentDoor.Origin.gameObject.name);
+				Debug.Log("Trying current door: " + currentDoor.Origin.orientation);
 				doorIndices.RemoveAt(randomDoor);
 				Triple parentDoorCell = parentDoor.Cell + Parent.CurrentRoom.cell;
 				Triple currentRoomCell = FindDoorCell(parentDoorCell, currentDoor) - currentDoor.Cell;
@@ -129,7 +134,7 @@ public class GraphNode
 			Debug.Log("No more doorIndices");
 		}
 		Debug.Log("No more roomIndices");
-		return false;
+		return TryRoom();
 	}
 
 	public bool IsPlaceable(Triple cell, Triple length)

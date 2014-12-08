@@ -2,10 +2,10 @@
 
 public static class GraphBuilder
 {
-	public static Graph Build()
+	public static Graph Build(int n)
 	{
 		Graph graph = new Graph();
-		for (int i = 0; i < 4; i++)
+		for (int i = 0; i < n; i++)
 		{
 			graph.AddNode();
 		}

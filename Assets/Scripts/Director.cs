@@ -5,8 +5,9 @@ public class Director : MonoBehaviour
 {
 	public Rooms rooms;
 
-	void Start() {
-		Graph graph = GraphBuilder.Build();
+	void Start()
+	{
+		Graph graph = GraphBuilder.Build(8);
 		bool isBuilt = LevelBuilder.Build(graph, rooms);
 		Debug.Log(isBuilt ? "Success!" : "Something terrible happened...");
 		if (isBuilt)
@@ -20,6 +21,14 @@ public class Director : MonoBehaviour
 					(cell.Z - LevelBuilder.SIZE_MAX/2) * Room.ROOM_SIZE);
 				Instantiate(node.CurrentRoom.Origin, position, Quaternion.identity);
 			}
+		}
+	}
+
+	void Update()
+	{
+		if (Input.GetKeyDown(KeyCode.R))
+		{
+			Application.LoadLevel(Application.loadedLevel);
 		}
 	}
 }
