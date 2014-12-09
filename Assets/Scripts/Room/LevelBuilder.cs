@@ -1,6 +1,6 @@
 public static class LevelBuilder
 {
-	public const int SIZE_MAX = 20;
+	public const int SIZE_MAX = 100;
 	static bool[,,] space;
 
 	public static bool Build(Graph graph, Rooms rooms)

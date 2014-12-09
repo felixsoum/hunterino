@@ -14,6 +14,7 @@ public class RoomTemplate
 	public List<DoorTemplate> EastDoors { get; set; }
 	public List<DoorTemplate> SouthDoors { get; set; }
 	public List<DoorTemplate> WestDoors { get; set; }
+	public List<DoorTemplate> AvailableDoors { get; set; }
 
 	public RoomTemplate(Room room, int index)
 	{
@@ -26,6 +27,8 @@ public class RoomTemplate
 		SouthDoors = new List<DoorTemplate>();
 		WestDoors = new List<DoorTemplate>();
 		CurrentDoor = null;
+		AvailableDoors = new List<DoorTemplate>();
+		RefreshAvailability();
 		for (int i = 0; i < room.doors.Count; i++)
 		{
 			var template = new DoorTemplate(room.doors[i], i);
@@ -51,21 +54,30 @@ public class RoomTemplate
 	public void KeepDoor(int index)
 	{
 		var door = Doors[index];
-		Doors.Clear();
-		Doors.Add(door);
+		AvailableDoors.Clear();
+		AvailableDoors.Add(door);
 	}
 
 	public DoorTemplate PopDoor()
 	{
-		int count = Doors.Count;
-		Debug.Log("Popping one door out of: " + count);
+		int count = AvailableDoors.Count;
+//		Debug.Log("Popping one door out of: " + count);
 		if (count == 0)
 		{
 			return null;
 		}
 		int index = Random.Range(0, count);
-		var door = Doors[index];
-		Doors.RemoveAt(index);
+		var door = AvailableDoors[index];
+		AvailableDoors.RemoveAt(index);
 		return door;
+	}
+
+	public void RefreshAvailability()
+	{
+		AvailableDoors.Clear();
+		foreach (DoorTemplate door in Doors)
+		{
+			AvailableDoors.Add(door);
+		}
 	}
 }

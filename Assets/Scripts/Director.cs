@@ -4,12 +4,19 @@ using System.Collections;
 public class Director : MonoBehaviour
 {
 	public Rooms rooms;
-
+	private const int BUILD_ATTEMPTS = 1;
 	void Start()
 	{
-		Graph graph = GraphBuilder.Build(8);
-		bool isBuilt = LevelBuilder.Build(graph, rooms);
-		Debug.Log(isBuilt ? "Success!" : "Something terrible happened...");
+		Graph graph;
+		bool isBuilt;
+		int i = 1;
+		do
+		{
+			graph = GraphBuilder.Build(20);
+			isBuilt = LevelBuilder.Build(graph, rooms);
+			Debug.Log(isBuilt ? "Success!" : "Something terrible happened...");
+		}
+		while (i++ < BUILD_ATTEMPTS);
 		if (isBuilt)
 		{
 			foreach (GraphNode node in graph.Nodes)

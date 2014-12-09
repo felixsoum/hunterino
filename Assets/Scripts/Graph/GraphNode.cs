@@ -9,8 +9,10 @@ public class GraphNode
 	public List<RoomTemplate> Rooms { get; set; }
 	public RoomTemplate CurrentRoom { get; set; }
 	public bool[,,] space;
-	public DoorTemplate ParentDoor { get; set; }
+	public List<DoorTemplate> ActiveDoors { get; set; }
 	public int nodeIndex = 0;
+	private List<int> roomIndices = new List<int>();
+	private List<int> doorIndices = new List<int>();
         
     public GraphNode() : this(null, 0) {}
 
@@ -24,6 +26,7 @@ public class GraphNode
 		}
 		Children = new List<GraphNode>();
 		CurrentRoom = null;
+		ActiveDoors = new List<DoorTemplate>();
 	}
 
 	public void SetCell(Triple cell)
@@ -73,43 +76,43 @@ public class GraphNode
 
 	public bool TryRoom()
 	{
-		Debug.Log("TryRoom node #" + nodeIndex + ", parent:" + Parent.CurrentRoom.Origin.name + Parent.nodeIndex);
+//		Debug.Log("TryRoom node #" + nodeIndex + ", parent:" + Parent.CurrentRoom.Origin.name + Parent.nodeIndex);
 		var parentDoor = Parent.CurrentRoom.PopDoor();
 		if (parentDoor == null)
 		{
-			Debug.Log("Parent door is null");
+//			Debug.Log("Parent door is null");
 			return false;
 		}
-		Debug.Log("Parent door:" + parentDoor.Origin.orientation);
-		var roomIndices = GetIndices(Rooms.Count);
-		Debug.Log("roomIndices1:" + roomIndices.Count);
+//		Debug.Log("Parent door:" + parentDoor.Origin.orientation);
+		PutIndices(roomIndices, Rooms.Count);
+//		Debug.Log("roomIndices1:" + roomIndices.Count);
 		while (roomIndices.Count > 0)
 		{
-			Debug.Log("roomIndices2:" + roomIndices.Count);
-			int randomRoom = Random.Range(0, roomIndices.Count - 1);
+//			Debug.Log("roomIndices2:" + roomIndices.Count);
+			int randomRoom = Random.Range(0, roomIndices.Count);
 			var currentRoom = Rooms[roomIndices[randomRoom]];
-			Debug.Log("Trying current room: " + currentRoom.Origin.gameObject.name);
+//			Debug.Log("Trying current room: " + currentRoom.Origin.gameObject.name);
 			roomIndices.RemoveAt(randomRoom);
 			var matchingDoors = GetMatchingDoors(currentRoom, parentDoor.Origin.orientation);
-			var doorIndices = GetIndices(matchingDoors.Count);
-			Debug.Log("doorIndices1:" + doorIndices.Count);
+			PutIndices(doorIndices, matchingDoors.Count);
+//			Debug.Log("doorIndices1:" + doorIndices.Count);
 			while (doorIndices.Count > 0)
 			{
-				Debug.Log("doorIndices2:" + doorIndices.Count);
-				int randomDoor = Random.Range(0, doorIndices.Count - 1);
+//				Debug.Log("doorIndices2:" + doorIndices.Count);
+				int randomDoor = Random.Range(0, doorIndices.Count);
 				var currentDoor = matchingDoors[doorIndices[randomDoor]];
-				Debug.Log("Trying current door: " + currentDoor.Origin.orientation);
+//				Debug.Log("Trying current door: " + currentDoor.Origin.orientation);
 				doorIndices.RemoveAt(randomDoor);
 				Triple parentDoorCell = parentDoor.Cell + Parent.CurrentRoom.cell;
 				Triple currentRoomCell = FindDoorCell(parentDoorCell, currentDoor) - currentDoor.Cell;
 				bool isPlaceable = IsPlaceable(currentRoomCell, currentRoom.length);
-				Debug.Log("isPlaceable=" + isPlaceable);
+//				Debug.Log("isPlaceable=" + isPlaceable);
 				if (isPlaceable)
 				{
-					Debug.Log("s1=" + CountSpace());
+//					Debug.Log("s1=" + CountSpace());
 					CurrentRoom = currentRoom;
 					SetCell(currentRoomCell);
-					Debug.Log("s2=" + CountSpace());
+//					Debug.Log("s2=" + CountSpace());
 					var isChildrenPossible = true;
 					for (int i = 0; i < Children.Count; i++)
 					{
@@ -122,18 +125,18 @@ public class GraphNode
 					if (!isChildrenPossible)
 					{
 						SetSpace(false);
-						TryRoom();
+						RefreshDoors();
 					}
 					else
 					{
-						Debug.Log("All children possible");
+//						Debug.Log("All children possible");
 						return true;
 					}
 				}
 			}
-			Debug.Log("No more doorIndices");
+//			Debug.Log("No more doorIndices");
 		}
-		Debug.Log("No more roomIndices");
+//		Debug.Log("No more roomIndices");
 		return TryRoom();
 	}
 
@@ -172,14 +175,13 @@ public class GraphNode
 		}
 	}
 
-	private List<int> GetIndices(int count)
+	private void PutIndices(List<int> list, int count)
 	{
-		var list = new List<int>();
+		list.Clear();
 		for (int i = 0; i < count; i++)
 		{
 			list.Add(i);
 		}
-		return list;
 	}
 
 	private Triple FindDoorCell(Triple matchingCell, DoorTemplate door)
@@ -196,6 +198,14 @@ public class GraphNode
 			return matchingCell + new Triple(1, 0, 0);
 		default:
 			return matchingCell;
+		}
+	}
+
+	private void RefreshDoors()
+	{
+		foreach(RoomTemplate room in Rooms)
+		{
+			room.RefreshAvailability();
 		}
 	}
 }

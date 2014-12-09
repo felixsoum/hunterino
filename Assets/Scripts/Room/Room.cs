@@ -25,7 +25,6 @@ public class Room : MonoBehaviour
 			length.Y = Mathf.Max(length.Y, door.cell.Y + 1);
 			length.Z = Mathf.Max(length.Z, door.cell.Z + 1);
 		}
-		Debug.Log("Length for " + gameObject.name + " " + length);
 		// For inspector
 		lengthX = length.X;
 		lengthY = length.Y;
