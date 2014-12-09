@@ -38,4 +38,9 @@ public class Room : MonoBehaviour
 		door.cell.Y = (int) (pos.y/ROOM_HEIGHT);
 		door.cell.Z = (int) ((pos.z + ROOM_SIZE/2)/ROOM_SIZE);
 	}
+
+	public void ActivateDoor(int index)
+	{
+		doors[index].Activate();
+	}
 }

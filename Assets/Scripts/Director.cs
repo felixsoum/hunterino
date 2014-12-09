@@ -26,7 +26,12 @@ public class Director : MonoBehaviour
 					(cell.X - LevelBuilder.SIZE_MAX/2) * Room.ROOM_SIZE,
 					(cell.Y - LevelBuilder.SIZE_MAX/2) * Room.ROOM_HEIGHT, 
 					(cell.Z - LevelBuilder.SIZE_MAX/2) * Room.ROOM_SIZE);
-				Instantiate(node.CurrentRoom.Origin, position, Quaternion.identity);
+				Room room = ((GameObject) Instantiate(node.CurrentRoom.Origin.gameObject, position, Quaternion.identity)).GetComponent<Room>();
+
+				foreach (int doorIndex in node.ActiveDoorIndices)
+				{
+					room.ActivateDoor(doorIndex);
+				}
 			}
 		}
 	}

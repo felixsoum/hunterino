@@ -9,7 +9,7 @@ public class GraphNode
 	public List<RoomTemplate> Rooms { get; set; }
 	public RoomTemplate CurrentRoom { get; set; }
 	public bool[,,] space;
-	public List<DoorTemplate> ActiveDoors { get; set; }
+	public List<int> ActiveDoorIndices { get; set; }
 	public int nodeIndex = 0;
 	private List<int> roomIndices = new List<int>();
 	private List<int> doorIndices = new List<int>();
@@ -26,7 +26,7 @@ public class GraphNode
 		}
 		Children = new List<GraphNode>();
 		CurrentRoom = null;
-		ActiveDoors = new List<DoorTemplate>();
+		ActiveDoorIndices = new List<int>();
 	}
 
 	public void SetCell(Triple cell)
@@ -130,6 +130,8 @@ public class GraphNode
 					else
 					{
 //						Debug.Log("All children possible");
+						ActiveDoorIndices.Add(currentDoor.Index);
+						Parent.ActiveDoorIndices.Add(parentDoor.Index);
 						return true;
 					}
 				}
