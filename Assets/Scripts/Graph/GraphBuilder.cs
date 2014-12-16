@@ -2,13 +2,12 @@
 
 public static class GraphBuilder
 {
-	public static Graph Build(int n)
+	public static Graph Build(int mainNodes, int branchNodes, int extraLeaves)
 	{
 		Graph graph = new Graph();
-		for (int i = 0; i < n; i++)
-		{
-			graph.AddNode();
-		}
+		graph.AddMainBranch(mainNodes);
+		graph.AddSideBranch(branchNodes);
+		graph.AddExtraLeaves(extraLeaves);
 		return graph;
 	}
 }
