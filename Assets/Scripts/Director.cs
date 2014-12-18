@@ -4,7 +4,7 @@ using System.Collections;
 public class Director : MonoBehaviour
 {
 	public Rooms rooms;
-	private const int BUILD_ATTEMPTS = 1;
+	private const int BUILD_ATTEMPTS = 100;
 	void Start()
 	{
 		Graph graph;
@@ -12,7 +12,7 @@ public class Director : MonoBehaviour
 		int i = 1;
 		do
 		{
-			graph = GraphBuilder.Build(16, 4, 2);
+			graph = GraphBuilder.Build(8, 0, 2);
 			isBuilt = LevelBuilder.Build(graph, rooms);
 			Debug.Log(isBuilt ? "Success!" : "Something terrible happened...");
 		}
@@ -27,7 +27,7 @@ public class Director : MonoBehaviour
 					(cell.Y - LevelBuilder.SIZE_MAX/2) * Room.ROOM_HEIGHT, 
 					(cell.Z - LevelBuilder.SIZE_MAX/2) * Room.ROOM_SIZE);
 				Room room = ((GameObject) Instantiate(node.CurrentRoom.Origin.gameObject, position, Quaternion.identity)).GetComponent<Room>();
-
+//				Debug.Log("Building " + room.name);
 				foreach (int doorIndex in node.ActiveDoorIndices)
 				{
 					room.ActivateDoor(doorIndex);

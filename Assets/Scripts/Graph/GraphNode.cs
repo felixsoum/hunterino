@@ -77,6 +77,7 @@ public class GraphNode
 	public bool TryRoom()
 	{
 //		Debug.Log("TryRoom node #" + nodeIndex + ", parent:" + Parent.CurrentRoom.Origin.name + Parent.nodeIndex);
+		ActiveDoorIndices.Clear();
 		var parentDoor = Parent.CurrentRoom.PopDoor();
 		if (parentDoor == null)
 		{

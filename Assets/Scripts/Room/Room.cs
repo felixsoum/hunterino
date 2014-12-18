@@ -41,6 +41,7 @@ public class Room : MonoBehaviour
 
 	public void ActivateDoor(int index)
 	{
+//		Debug.Log("door index:" + index);
 		doors[index].Activate();
 	}
 }
