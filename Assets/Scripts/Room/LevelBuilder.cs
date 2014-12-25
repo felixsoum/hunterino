@@ -22,7 +22,15 @@ public static class LevelBuilder
 			node.space = space;
 		}
 		SetRoot(graph.Nodes[0]);
-		return graph.Nodes[1].TryRoom();
+		bool result = graph.Nodes[1].TryRoom();
+		if (result)
+		{
+			foreach (GraphNode node in graph.Nodes)
+			{
+				node.SetDoorFromChildren();
+			}
+		}
+		return result;
 	}
 
 	public static void SetRoot(GraphNode node)

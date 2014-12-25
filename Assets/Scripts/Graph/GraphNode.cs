@@ -11,6 +11,7 @@ public class GraphNode
 	public bool[,,] space;
 	public List<int> ActiveDoorIndices { get; set; }
 	public int nodeIndex = 0;
+	public int DoorForParent { get; set; }
 	private List<int> roomIndices = new List<int>();
 	private List<int> doorIndices = new List<int>();
         
@@ -132,7 +133,7 @@ public class GraphNode
 					{
 //						Debug.Log("All children possible");
 						ActiveDoorIndices.Add(currentDoor.Index);
-						Parent.ActiveDoorIndices.Add(parentDoor.Index);
+						DoorForParent = parentDoor.Index;
 						return true;
 					}
 				}
@@ -159,6 +160,14 @@ public class GraphNode
 			}
 		}
 		return true;
+	}
+
+	public void SetDoorFromChildren()
+	{
+		foreach (var child in Children)
+		{
+			ActiveDoorIndices.Add(child.DoorForParent);
+		}
 	}
 
 	private List<DoorTemplate> GetMatchingDoors(RoomTemplate room, Door.Orientation orientation)

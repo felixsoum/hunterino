@@ -4,7 +4,7 @@ using System.Collections;
 public class Director : MonoBehaviour
 {
 	public Rooms rooms;
-	private const int BUILD_ATTEMPTS = 100;
+	private const int BUILD_ATTEMPTS = 1;
 	void Start()
 	{
 		Graph graph;
