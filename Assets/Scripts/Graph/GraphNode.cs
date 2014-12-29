@@ -81,17 +81,16 @@ public class GraphNode
 	public bool TryRoom()
 	{
 //		Debug.Log("TryRoom node #" + nodeIndex + ", parent:" + Parent.CurrentRoom.Origin.name + Parent.nodeIndex);
-		ActiveDoorIndices.Clear();
 		if (currentParentRoomCandidate != Parent.CurrentRoom)
 		{
 			currentParentRoomCandidate = Parent.CurrentRoom;
 			PutIndices(candidateParentDoors, Parent.CurrentRoom.AvailableDoors.Count);
-			parentAvailableDoorsClone.Clear();
 			parentAvailableDoorsClone = CloneDoors(Parent.CurrentRoom.AvailableDoors);
 		}
 //		var parentDoor = Parent.CurrentRoom.PopDoor();
 		while (candidateParentDoors.Count > 0)
 		{
+			ActiveDoorIndices.Clear();
 			Parent.CurrentRoom.AvailableDoors = CloneDoors(parentAvailableDoorsClone);
 			var randomParentDoorIndex = Random.Range(0, candidateParentDoors.Count);
 			int parentDoorCandidateIndex = candidateParentDoors[randomParentDoorIndex];
@@ -146,6 +145,10 @@ public class GraphNode
 								}
 								else
 								{
+									for (int j = i; j < Children.Count; j++)
+									{
+										Children[j].ResetParentTrack();
+									}
 									i -= 2;
 								}
 							}
@@ -196,6 +199,11 @@ public class GraphNode
 		{
 			ActiveDoorIndices.Add(child.DoorForParent);
 		}
+	}
+
+	public void ResetParentTrack()
+	{
+		currentParentRoomCandidate = null;
 	}
 
 	private List<DoorTemplate> GetMatchingDoors(RoomTemplate room, Door.Orientation orientation)

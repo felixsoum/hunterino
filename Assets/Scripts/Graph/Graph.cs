@@ -62,7 +62,7 @@ public class Graph
 			{
 				randomNode = nodes[Random.Range(1, nodes.Count)];
 			}
-			while(randomNode.Parent == null || randomNode.Children.Count == 0);
+			while(randomNode.Parent == null || randomNode.Children.Count != 1);
 			AddNode(randomNode);
 		}
 	}

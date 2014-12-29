@@ -12,7 +12,7 @@ public class Director : MonoBehaviour
 		int i = 1;
 		do
 		{
-			graph = GraphBuilder.Build(8, 2, 0);
+			graph = GraphBuilder.Build(8, 0, 2);
 			isBuilt = LevelBuilder.Build(graph, rooms);
 			Debug.Log(isBuilt ? "Success!" : "Something terrible happened...");
 		}
