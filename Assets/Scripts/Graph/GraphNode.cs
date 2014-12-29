@@ -94,9 +94,10 @@ public class GraphNode
 		{
 			Parent.CurrentRoom.AvailableDoors = CloneDoors(parentAvailableDoorsClone);
 			var randomParentDoorIndex = Random.Range(0, candidateParentDoors.Count);
+			int parentDoorCandidateIndex = candidateParentDoors[randomParentDoorIndex];
 			candidateParentDoors.RemoveAt(randomParentDoorIndex);
-			var parentDoor = Parent.CurrentRoom.AvailableDoors[randomParentDoorIndex];
-			Parent.CurrentRoom.AvailableDoors.RemoveAt(randomParentDoorIndex);
+			var parentDoor = Parent.CurrentRoom.AvailableDoors[parentDoorCandidateIndex];
+			Parent.CurrentRoom.AvailableDoors.RemoveAt(parentDoorCandidateIndex);
 	//		Debug.Log("Parent door:" + parentDoor.Origin.orientation);
 			PutIndices(roomIndices, Rooms.Count);
 	//		Debug.Log("roomIndices1:" + roomIndices.Count);
@@ -128,12 +129,25 @@ public class GraphNode
 						SetCell(currentRoomCell);
 	//					Debug.Log("s2=" + CountSpace());
 						var isChildrenPossible = true;
+						int loopCheck = 0;
 						for (int i = 0; i < Children.Count; i++)
 						{
+							if (loopCheck++ > 100)
+							{
+								Debug.LogError("Infinite detected");
+								return false;
+							}
 							if (!Children[i].TryRoom())
 							{
-								isChildrenPossible = false;
-								break;
+								if (i == 0)
+								{
+									isChildrenPossible = false;
+									break;
+								}
+								else
+								{
+									i -= 2;
+								}
 							}
 						}
 						if (!isChildrenPossible)

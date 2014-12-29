@@ -4,7 +4,7 @@ using System.Collections;
 public class Director : MonoBehaviour
 {
 	public Rooms rooms;
-	private const int BUILD_ATTEMPTS = 1;
+	private const int BUILD_ATTEMPTS = 100;
 	void Start()
 	{
 		Graph graph;
@@ -12,7 +12,7 @@ public class Director : MonoBehaviour
 		int i = 1;
 		do
 		{
-			graph = GraphBuilder.Build(8, 0, 2);
+			graph = GraphBuilder.Build(8, 2, 0);
 			isBuilt = LevelBuilder.Build(graph, rooms);
 			Debug.Log(isBuilt ? "Success!" : "Something terrible happened...");
 		}
