@@ -14,6 +14,9 @@ public class GraphNode
 	public int DoorForParent { get; set; }
 	private List<int> roomIndices = new List<int>();
 	private List<int> doorIndices = new List<int>();
+	private List<int> candidateParentDoors = new List<int>();
+	private RoomTemplate currentParentRoomCandidate = null;
+	private List<DoorTemplate> parentAvailableDoorsClone = new List<DoorTemplate>();
         
     public GraphNode() : this(null, 0) {}
 
@@ -79,69 +82,80 @@ public class GraphNode
 	{
 //		Debug.Log("TryRoom node #" + nodeIndex + ", parent:" + Parent.CurrentRoom.Origin.name + Parent.nodeIndex);
 		ActiveDoorIndices.Clear();
-		var parentDoor = Parent.CurrentRoom.PopDoor();
-		if (parentDoor == null)
+		if (currentParentRoomCandidate != Parent.CurrentRoom)
 		{
-//			Debug.Log("Parent door is null");
-			return false;
+			currentParentRoomCandidate = Parent.CurrentRoom;
+			PutIndices(candidateParentDoors, Parent.CurrentRoom.AvailableDoors.Count);
+			parentAvailableDoorsClone.Clear();
+			parentAvailableDoorsClone = CloneDoors(Parent.CurrentRoom.AvailableDoors);
 		}
-//		Debug.Log("Parent door:" + parentDoor.Origin.orientation);
-		PutIndices(roomIndices, Rooms.Count);
-//		Debug.Log("roomIndices1:" + roomIndices.Count);
-		while (roomIndices.Count > 0)
+//		var parentDoor = Parent.CurrentRoom.PopDoor();
+		while (candidateParentDoors.Count > 0)
 		{
-//			Debug.Log("roomIndices2:" + roomIndices.Count);
-			int randomRoom = Random.Range(0, roomIndices.Count);
-			var currentRoom = Rooms[roomIndices[randomRoom]];
-//			Debug.Log("Trying current room: " + currentRoom.Origin.gameObject.name);
-			roomIndices.RemoveAt(randomRoom);
-			var matchingDoors = GetMatchingDoors(currentRoom, parentDoor.Origin.orientation);
-			PutIndices(doorIndices, matchingDoors.Count);
-//			Debug.Log("doorIndices1:" + doorIndices.Count);
-			while (doorIndices.Count > 0)
+			Parent.CurrentRoom.AvailableDoors = CloneDoors(parentAvailableDoorsClone);
+			var randomParentDoorIndex = Random.Range(0, candidateParentDoors.Count);
+			candidateParentDoors.RemoveAt(randomParentDoorIndex);
+			var parentDoor = Parent.CurrentRoom.AvailableDoors[randomParentDoorIndex];
+			Parent.CurrentRoom.AvailableDoors.RemoveAt(randomParentDoorIndex);
+	//		Debug.Log("Parent door:" + parentDoor.Origin.orientation);
+			PutIndices(roomIndices, Rooms.Count);
+	//		Debug.Log("roomIndices1:" + roomIndices.Count);
+			while (roomIndices.Count > 0)
 			{
-//				Debug.Log("doorIndices2:" + doorIndices.Count);
-				int randomDoor = Random.Range(0, doorIndices.Count);
-				var currentDoor = matchingDoors[doorIndices[randomDoor]];
-//				Debug.Log("Trying current door: " + currentDoor.Origin.orientation);
-				doorIndices.RemoveAt(randomDoor);
-				Triple parentDoorCell = parentDoor.Cell + Parent.CurrentRoom.cell;
-				Triple currentRoomCell = FindDoorCell(parentDoorCell, currentDoor) - currentDoor.Cell;
-				bool isPlaceable = IsPlaceable(currentRoomCell, currentRoom.length);
-//				Debug.Log("isPlaceable=" + isPlaceable);
-				if (isPlaceable)
+	//			Debug.Log("roomIndices2:" + roomIndices.Count);
+				int randomRoom = Random.Range(0, roomIndices.Count);
+				var currentRoom = Rooms[roomIndices[randomRoom]];
+	//			Debug.Log("Trying current room: " + currentRoom.Origin.gameObject.name);
+				roomIndices.RemoveAt(randomRoom);
+				var matchingDoors = GetMatchingDoors(currentRoom, parentDoor.Origin.orientation);
+				PutIndices(doorIndices, matchingDoors.Count);
+	//			Debug.Log("doorIndices1:" + doorIndices.Count);
+				while (doorIndices.Count > 0)
 				{
-//					Debug.Log("s1=" + CountSpace());
-					CurrentRoom = currentRoom;
-					SetCell(currentRoomCell);
-//					Debug.Log("s2=" + CountSpace());
-					var isChildrenPossible = true;
-					for (int i = 0; i < Children.Count; i++)
+	//				Debug.Log("doorIndices2:" + doorIndices.Count);
+					int randomDoor = Random.Range(0, doorIndices.Count);
+					var currentDoor = matchingDoors[doorIndices[randomDoor]];
+	//				Debug.Log("Trying current door: " + currentDoor.Origin.orientation);
+					doorIndices.RemoveAt(randomDoor);
+					Triple parentDoorCell = parentDoor.Cell + Parent.CurrentRoom.cell;
+					Triple currentRoomCell = FindDoorCell(parentDoorCell, currentDoor) - currentDoor.Cell;
+					bool isPlaceable = IsPlaceable(currentRoomCell, currentRoom.length);
+	//				Debug.Log("isPlaceable=" + isPlaceable);
+					if (isPlaceable)
 					{
-						if (!Children[i].TryRoom())
+	//					Debug.Log("s1=" + CountSpace());
+						CurrentRoom = currentRoom;
+						SetCell(currentRoomCell);
+	//					Debug.Log("s2=" + CountSpace());
+						var isChildrenPossible = true;
+						for (int i = 0; i < Children.Count; i++)
 						{
-							isChildrenPossible = false;
-							break;
+							if (!Children[i].TryRoom())
+							{
+								isChildrenPossible = false;
+								break;
+							}
+						}
+						if (!isChildrenPossible)
+						{
+							SetSpace(false);
+							RefreshDoors();
+						}
+						else
+						{
+	//						Debug.Log("All children possible");
+							ActiveDoorIndices.Add(currentDoor.Index);
+							DoorForParent = parentDoor.Index;
+							return true;
 						}
 					}
-					if (!isChildrenPossible)
-					{
-						SetSpace(false);
-						RefreshDoors();
-					}
-					else
-					{
-//						Debug.Log("All children possible");
-						ActiveDoorIndices.Add(currentDoor.Index);
-						DoorForParent = parentDoor.Index;
-						return true;
-					}
 				}
+	//			Debug.Log("No more doorIndices");
 			}
-//			Debug.Log("No more doorIndices");
+	//		Debug.Log("No more roomIndices");
+//			return TryRoom();
 		}
-//		Debug.Log("No more roomIndices");
-		return TryRoom();
+		return false;
 	}
 
 	public bool IsPlaceable(Triple cell, Triple length)
@@ -219,5 +233,15 @@ public class GraphNode
 		{
 			room.RefreshAvailability();
 		}
+	}
+
+	private List<DoorTemplate> CloneDoors(List<DoorTemplate> doors)
+	{
+		var list = new List<DoorTemplate>();
+		foreach (var door in doors)
+		{
+			list.Add(door);
+		}
+		return list;
 	}
 }
