@@ -19,6 +19,8 @@ public class Graph
 		}
 	}
 	List<GraphNode> nodes;
+	int branch;
+	List<int> leaves = new List<int>();
 
 	public Graph()
 	{
@@ -40,7 +42,8 @@ public class Graph
 		{
 			return;
 		}
-		var midNode = nodes[nodes.Count / 2];
+		branch = nodes.Count / 2;
+		var midNode = nodes[branch];
 		AddNode(midNode);
 		for (int i = 1; i < n; i++)
 		{
@@ -58,12 +61,24 @@ public class Graph
 		for (int i = 0; i < n; i++)
 		{
 			GraphNode randomNode;
+			int randInt;
 			do 
 			{
-				randomNode = nodes[Random.Range(1, nodes.Count)];
+				randInt = Random.Range(1, nodes.Count);
+				randomNode = nodes[randInt];
 			}
-			while(randomNode.Parent == null || randomNode.Children.Count != 1);
+			while(randomNode.Parent == null || randInt == 1 || randInt == branch - 1 || randomNode.Children.Count != 1);
+			leaves.Add(randInt);
 			AddNode(randomNode);
+		}
+	}
+
+	public void PrintDebug()
+	{
+		Debug.Log("Leaves at: ");
+		foreach (var leaf in leaves)
+		{
+			Debug.Log(leaf);
 		}
 	}
 
